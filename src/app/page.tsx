@@ -42,7 +42,13 @@ export default function Home() {
         data-aos="fade-up"
         data-aos-delay="120"
       >
-        <AiInputDemo />
+        <div className="mx-auto max-w-6xl px-4 py-10">
+          <p className="text-sm tracking-[0.2em] text-muted-foreground uppercase">Conservation</p>
+          <h3 className="mt-2 text-2xl font-semibold">Wildlife AI Assistant</h3>
+          <p className="mt-2 max-w-2xl text-muted-foreground">
+            Open the floating <strong>Ask AI</strong> button to chat about animals, habitats, and conservation.
+          </p>
+        </div>
       </section>
       <section
         id="team"
@@ -60,6 +66,8 @@ export default function Home() {
       >
         <FooterDemo />
       </section>
+
+      <AiInputDemo />
     </main>
   );
 }
