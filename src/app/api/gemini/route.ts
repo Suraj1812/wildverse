@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 
-const MODEL = "gemini-1.5-flash";
+const MODEL_CANDIDATES = [
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-flash",
+];
+const API_VERSIONS = ["v1", "v1beta"];
 const ANIMAL_SCOPE =
   "You are a wildlife-only assistant. Answer only about animals, wildlife habitats, conservation, behavior, ecology, and biodiversity. If a question is outside wildlife topics, refuse briefly and ask for an animal-related question.";
 
@@ -60,36 +66,45 @@ export async function POST(req: Request) {
       });
     }
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
-    const upstream = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: ANIMAL_SCOPE }],
-        },
-        contents: [{ role: "user", parts: [{ text: message }] }],
-      }),
-    });
-
-    const data = (await upstream.json()) as {
-      candidates?: Array<{
-        content?: {
-          parts?: Array<{ text?: string }>;
-        };
-      }>;
-      error?: { message?: string };
+    const requestBody = {
+      systemInstruction: {
+        parts: [{ text: ANIMAL_SCOPE }],
+      },
+      contents: [{ role: "user", parts: [{ text: message }] }],
     };
 
-    if (!upstream.ok) {
-      return NextResponse.json(
-        { error: data.error?.message || "Gemini request failed." },
-        { status: upstream.status }
-      );
+    let lastError = "Gemini request failed.";
+    for (const apiVersion of API_VERSIONS) {
+      for (const model of MODEL_CANDIDATES) {
+        const endpoint = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiKey}`;
+        const upstream = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        });
+
+        const data = (await upstream.json()) as {
+          candidates?: Array<{
+            content?: {
+              parts?: Array<{ text?: string }>;
+            };
+          }>;
+          error?: { message?: string };
+        };
+
+        if (upstream.ok) {
+          const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("\n").trim();
+          return NextResponse.json({ text: text || "No text returned from Gemini." });
+        }
+
+        lastError = data.error?.message || `Gemini request failed for ${model} (${apiVersion}).`;
+      }
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("\n").trim();
-    return NextResponse.json({ text: text || "No text returned from Gemini." });
+    return NextResponse.json(
+      { error: lastError },
+      { status: 502 }
+    );
   } catch {
     return NextResponse.json({ error: "Unexpected server error." }, { status: 500 });
   }
