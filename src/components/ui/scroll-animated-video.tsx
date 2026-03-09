@@ -324,10 +324,24 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
     >
       <div className="hsv-container" ref={headlineRef}>
         <div className="hsv-headline">
-          <h1 className="hsv-title">{title}</h1>
-          {subtitle ? <h2 className="hsv-subtitle">{subtitle}</h2> : null}
-          {meta ? <div className="hsv-meta">{meta}</div> : null}
-          {credits ? <div className="hsv-credits">{credits}</div> : null}
+          <h1 className="hsv-title" data-aos="fade-down" data-aos-delay="0">
+            {title}
+          </h1>
+          {subtitle ? (
+            <h2 className="hsv-subtitle" data-aos="fade-down" data-aos-delay="90">
+              {subtitle}
+            </h2>
+          ) : null}
+          {meta ? (
+            <div className="hsv-meta" data-aos="fade-down" data-aos-delay="140">
+              {meta}
+            </div>
+          ) : null}
+          {credits ? (
+            <div className="hsv-credits" data-aos="fade-down" data-aos-delay="180">
+              {credits}
+            </div>
+          ) : null}
         </div>
       </div>
 
