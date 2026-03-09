@@ -292,7 +292,7 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
       return <Image src={src} alt="Wildlife scene" fill className="object-cover" sizes="100vw" priority />;
     }
 
-    const sources: JSX.Element[] = [];
+    const sources: React.ReactElement[] = [];
     if (typeof media === "string") {
       sources.push(<source key="mp4" src={media} type="video/mp4" />);
     } else if (isSourceObject(media)) {
