@@ -1,0 +1,16 @@
+{
+  "name": "WildVerse",
+  "short_name": "WildVerse",
+  "description": "Wildlife species, habitats, and conservation experiences.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
